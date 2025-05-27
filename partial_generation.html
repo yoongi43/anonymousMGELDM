@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <!-- Meta tags for social media banners, these should be filled in appropriatly as they are your "business card" -->
+        <!-- Replace the content tag with appropriate information -->
+        <meta name="description" content="DESCRIPTION META TAG">
+        <meta property="og:title" content="SOCIAL MEDIA TITLE TAG"/>
+        <meta property="og:description" content="SOCIAL MEDIA DESCRIPTION TAG TAG"/>
+        <meta property="og:url" content="URL OF THE WEBSITE"/>
+        <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X630-->
+        <meta property="og:image" content="static/image/your_banner_image.png" />
+        <meta property="og:image:width" content="1200"/>
+        <meta property="og:image:height" content="630"/>
+      
+      
+        <meta name="twitter:title" content="TWITTER BANNER TITLE META TAG">
+        <meta name="twitter:description" content="TWITTER BANNER DESCRIPTION META TAG">
+        <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X600-->
+        <meta name="twitter:image" content="static/images/your_twitter_banner_image.png">
+        <meta name="twitter:card" content="summary_large_image">
+        <!-- Keywords for your paper to be indexed by-->
+        <meta name="keywords" content="KEYWORDS SHOULD BE PLACED HERE">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+      
+      
+        <title>MGE-LDM Slakh Partial Generation</title>
+        <link rel="icon" type="image/x-icon" href="static/images/music_favicon.png">
+        <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+      
+        <link rel="stylesheet" href="static/css/bulma.min.css">
+        <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+        <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+        <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+        <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+        <link rel="stylesheet" href="static/css/index.css">
+      
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+        <script defer src="static/js/fontawesome.all.min.js"></script>
+        <script src="static/js/bulma-carousel.min.js"></script>
+        <script src="static/js/bulma-slider.min.js"></script>
+        <script src="static/js/index.js"></script>
+      
+        <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+        <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+        <style>
+          .plyr audio,
+          .plyr__controls {
+            min-width: 80px;  /* 플레이어 폭, 더 줄이고 싶으면 수정 */
+            max-width: 100px;
+          }
+          .mel-img {
+            width: 80px;
+            max-width: 80px;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto;
+          }
+          .js-player {
+            width: 110px !important; /* Plyr.js 오디오 바 width 강제 */
+            min-width: 100px !important;
+            display: block;
+            margin: 0 auto;
+          }
+          td {
+            vertical-align: middle !important;
+            text-align: center !important;
+            padding: 8px 4px;
+          }
+          /* 보라색 버튼 (#996699) */
+          .btn-purple {
+            background: #996699 !important;
+            color: #fff !important;
+            border: none !important;
+          }
+          .btn-purple:hover, .btn-purple:focus {
+            background: #7d5682 !important; /* 조금 더 진한 보라색 (hover) */
+            color: #fff !important;
+          }
+
+          /* 노란색 버튼 (#FFCC33) */
+          .btn-yellow {
+            background: #FFCC33 !important;
+            color: #333 !important;
+            border: none !important;
+          }
+          .btn-yellow:hover, .btn-yellow:focus {
+            background: #e6b800 !important; /* 진한 노랑 (hover) */
+            color: #222 !important;
+          }
+
+          /* 빨간색 버튼 (#FF6666) */
+          .btn-red {
+            background: #FF6666 !important;
+            color: #fff !important;
+            border: none !important;
+          }
+          .btn-red:hover, .btn-red:focus {
+            background: #cc3333 !important; /* 진한 빨강 (hover) */
+            color: #fff !important;
+          }
+          td, th {
+            text-align: center !important;
+            vertical-align: middle !important;
+          }
+          
+          .mel-img {
+            width: 80px;
+            max-width: 80px;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto 8px !important;
+          }
+          
+          .js-player, .plyr, .plyr__controls {
+            width: 120px !important; /* Plyr.js 오디오 바 width 강제 */
+            min-width: 100px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            margin-bottom: 0 !important;
+          }
+          
+          .plyr--audio {
+            max-width: 110px !important;
+            min-width: 90px !important;
+            width: 100px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            display: block !important;
+          }
+          
+          .plyr__controls {
+            justify-content: center !important;
+          }
+        </style>
+      </head>
+
+      
+<body>
+  <section class="hero is-light">
+    <div class="hero-body">
+      <div class="container is-max-desktop has-text-centered">
+        <h1 class="title is-2" style="margin-bottom:0.8em;">Partial Generation Demo (Slakh)</h1>
+        <h2 class="subtitle is-5">MGE-LDM: Simultaneous Music Generation and Extraction via Joint Latent Modeling</h2>
+        <div class="buttons is-centered" style="margin-top:1em;">
+          <a href="index.html" class="button is-primary is-small">Home</a>
+          <a href="total_generation.html" class="button btn-purple is-small">Total Generation (Slakh)</a>
+          <!-- <a href="partial_generation.html" class="button is-link is-small">Partial Generation</a> -->
+          <a href="extraction.html" class="button btn-red is-small">Source Extraction (Slakh)</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- BDGP-Partial Generation Section -->
+  <section class="section hero is-light">
+    <div class="container is-max-desktop">
+
+      <h2 class="title is-3 has-text-centered">Partial Generation Samples</h2>
+      <!-- <body> Bass imputation </body> -->
+      <h3 class="title is-4 has-text-centered">Bass Imputation</h3>
+      <div style="display: flex; justify-content: center;">
+        <table class = "table is-striped is-hoverable has-text-centered">
+          <thead>
+            <tr>
+              <th colspan="2">Given Mixture</th>
+              <th>MSDM<sup>[1]</sup></th>
+              <th>MSG-LD<sup>[2]</sup></th>
+              <th>MGE-LDM (ours)</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/bass/Track01897_023/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01897_023/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01897_023/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01897_023/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01897_023/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01897_023/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01897_023/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01897_023/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01897_023/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01897_023/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01897_023/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01897_023/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01897_023/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01897_023/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/bass/Track01954_020/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01954_020/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01954_020/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01954_020/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01954_020/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01954_020/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01954_020/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01954_020/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01954_020/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01954_020/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01954_020/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01954_020/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01954_020/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01954_020/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/bass/Track01996_002/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01996_002/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01996_002/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01996_002/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01996_002/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01996_002/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01996_002/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01996_002/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01996_002/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01996_002/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01996_002/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01996_002/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01996_002/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01996_002/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/bass/Track01920_016/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01920_016/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01920_016/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01920_016/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01920_016/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01920_016/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01920_016/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01920_016/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01920_016/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01920_016/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01920_016/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01920_016/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01920_016/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01920_016/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/bass/Track01930_029/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01930_029/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01930_029/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01930_029/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01930_029/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01930_029/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01930_029/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01930_029/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01930_029/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01930_029/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01930_029/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01930_029/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01930_029/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01930_029/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/bass/Track01975_000/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01975_000/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01975_000/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01975_000/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01975_000/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01975_000/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01975_000/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01975_000/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01975_000/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01975_000/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01975_000/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01975_000/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01975_000/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01975_000/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/bass/Track01932_023/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01932_023/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01932_023/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01932_023/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01932_023/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01932_023/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01932_023/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01932_023/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01932_023/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01932_023/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01932_023/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01932_023/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01932_023/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01932_023/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/bass/Track01889_004/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01889_004/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01889_004/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01889_004/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01889_004/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01889_004/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01889_004/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01889_004/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01889_004/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01889_004/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01889_004/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01889_004/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01889_004/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01889_004/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/bass/Track01961_029/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01961_029/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01961_029/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01961_029/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01961_029/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01961_029/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01961_029/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01961_029/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01961_029/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01961_029/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01961_029/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01961_029/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01961_029/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01961_029/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/bass/Track01916_006/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01916_006/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01916_006/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01916_006/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01916_006/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01916_006/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01916_006/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01916_006/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01916_006/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01916_006/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01916_006/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01916_006/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/bass/Track01916_006/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/bass/Track01916_006/MGE/mix.wav"></audio></td>
+            </tr>
+            
+          </tbody>
+        </table>
+      </div>
+      <p class="has-text-right is-size-7">
+        Gen: generated bass<br>
+        Mix: given mixture + generated bass
+      </p>
+
+      <h3 class="title is-4 has-text-centered">Drums Imputation</h3>
+      <div style="display: flex; justify-content: center;">
+        <table class = "table is-striped is-hoverable has-text-centered">
+          <thead>
+            <tr>
+              <th colspan="2">Given Mixture</th>
+              <th>MSDM<sup>[1]</sup></th>
+              <th>MSG-LD<sup>[2]</sup></th>
+              <th>MGE-LDM (ours)</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/drums/Track01976_023/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01976_023/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01976_023/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01976_023/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01976_023/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01976_023/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01976_023/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01976_023/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01976_023/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01976_023/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01976_023/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01976_023/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01976_023/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01976_023/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/drums/Track01959_009/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01959_009/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01959_009/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01959_009/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01959_009/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01959_009/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01959_009/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01959_009/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01959_009/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01959_009/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01959_009/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01959_009/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01959_009/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01959_009/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/drums/Track01974_006/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01974_006/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01974_006/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01974_006/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01974_006/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01974_006/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01974_006/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01974_006/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01974_006/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01974_006/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01974_006/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01974_006/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01974_006/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01974_006/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/drums/Track01907_013/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01907_013/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01907_013/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01907_013/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01907_013/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01907_013/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01907_013/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01907_013/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01907_013/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01907_013/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01907_013/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01907_013/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01907_013/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01907_013/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/drums/Track01889_004/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01889_004/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01889_004/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01889_004/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01889_004/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01889_004/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01889_004/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01889_004/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01889_004/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01889_004/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01889_004/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01889_004/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01889_004/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01889_004/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/drums/Track02017_014/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track02017_014/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track02017_014/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track02017_014/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track02017_014/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track02017_014/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track02017_014/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track02017_014/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track02017_014/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track02017_014/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track02017_014/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track02017_014/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track02017_014/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track02017_014/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/drums/Track01897_023/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01897_023/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01897_023/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01897_023/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01897_023/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01897_023/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01897_023/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01897_023/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01897_023/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01897_023/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01897_023/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01897_023/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01897_023/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01897_023/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/drums/Track02020_026/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track02020_026/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track02020_026/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track02020_026/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track02020_026/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track02020_026/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track02020_026/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track02020_026/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track02020_026/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track02020_026/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track02020_026/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track02020_026/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track02020_026/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track02020_026/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/drums/Track01920_016/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01920_016/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01920_016/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01920_016/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01920_016/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01920_016/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01920_016/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01920_016/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01920_016/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01920_016/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01920_016/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01920_016/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01920_016/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01920_016/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/drums/Track01976_022/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01976_022/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01976_022/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01976_022/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01976_022/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01976_022/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01976_022/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01976_022/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01976_022/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01976_022/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01976_022/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01976_022/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/drums/Track01976_022/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/drums/Track01976_022/MGE/mix.wav"></audio></td>
+            </tr>
+            
+          </tbody>
+        </table>
+      </div>
+      <p class="has-text-right is-size-7">
+        Gen: generated drums<br>
+        Mix: given mixture + generated drums
+      </p>
+
+      <h3 class="title is-4 has-text-centered">Guitar Imputation</h3>
+      <div style="display: flex; justify-content: center;">
+        <table class = "table is-striped is-hoverable has-text-centered">
+          <thead>
+            <tr>
+              <th colspan="2">Given Mixture</th>
+              <th>MSDM<sup>[1]</sup></th>
+              <th>MSG-LD<sup>[2]</sup></th>
+              <th>MGE-LDM (ours)</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01965_014/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01965_014/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01965_014/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01965_014/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01965_014/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01965_014/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01965_014/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01965_014/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01965_014/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01965_014/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01965_014/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01965_014/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01965_014/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01965_014/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02061_016/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02061_016/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02061_016/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02061_016/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02061_016/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02061_016/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02061_016/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02061_016/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02061_016/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02061_016/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02061_016/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02061_016/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02061_016/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02061_016/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01900_010/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01900_010/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01900_010/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01900_010/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01900_010/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01900_010/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01900_010/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01900_010/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01900_010/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01900_010/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01900_010/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01900_010/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01900_010/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01900_010/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01913_004/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01913_004/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01913_004/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01913_004/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01913_004/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01913_004/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01913_004/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01913_004/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01913_004/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01913_004/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01913_004/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01913_004/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01913_004/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01913_004/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02079_002/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02079_002/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02079_002/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02079_002/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02079_002/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02079_002/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02079_002/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02079_002/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02079_002/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02079_002/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02079_002/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02079_002/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02079_002/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02079_002/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01930_031/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01930_031/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01930_031/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01930_031/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01930_031/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01930_031/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01930_031/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01930_031/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01930_031/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01930_031/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01930_031/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01930_031/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01930_031/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01930_031/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01982_000/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01982_000/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01982_000/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01982_000/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01982_000/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01982_000/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01982_000/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01982_000/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01982_000/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01982_000/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01982_000/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01982_000/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01982_000/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01982_000/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01967_013/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01967_013/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01967_013/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01967_013/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01967_013/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01967_013/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01967_013/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01967_013/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01967_013/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01967_013/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01967_013/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01967_013/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track01967_013/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track01967_013/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02026_010/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02026_010/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02026_010/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02026_010/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02026_010/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02026_010/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02026_010/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02026_010/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02026_010/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02026_010/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02026_010/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02026_010/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02026_010/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02026_010/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02031_026/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02031_026/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02031_026/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02031_026/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02031_026/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02031_026/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02031_026/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02031_026/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02031_026/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02031_026/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02031_026/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02031_026/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/guitar/Track02031_026/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/guitar/Track02031_026/MGE/mix.wav"></audio></td>
+            </tr>
+            
+          </tbody>
+        </table>
+      </div>
+      <p class="has-text-right is-size-7">
+        Gen: generated guitar<br>
+        Mix: given mixture + generated guitar
+      </p>
+
+      <h3 class="title is-4 has-text-centered">Piano Imputation</h3>
+      <div style="display: flex; justify-content: center;">
+        <table class = "table is-striped is-hoverable has-text-centered">
+          <thead>
+            <tr>
+              <th colspan="2">Given Mixture</th>
+              <th>MSDM<sup>[1]</sup></th>
+              <th>MSG-LD<sup>[2]</sup></th>
+              <th>MGE-LDM (ours)</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/piano/Track01950_014/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01950_014/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01950_014/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01950_014/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01950_014/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01950_014/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01950_014/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01950_014/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01950_014/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01950_014/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01950_014/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01950_014/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01950_014/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01950_014/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/piano/Track02088_004/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02088_004/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02088_004/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02088_004/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02088_004/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02088_004/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02088_004/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02088_004/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02088_004/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02088_004/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02088_004/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02088_004/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02088_004/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02088_004/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/piano/Track02049_002/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02049_002/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02049_002/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02049_002/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02049_002/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02049_002/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02049_002/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02049_002/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02049_002/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02049_002/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02049_002/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02049_002/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02049_002/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02049_002/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/piano/Track02003_008/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02003_008/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02003_008/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02003_008/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02003_008/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02003_008/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02003_008/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02003_008/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02003_008/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02003_008/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02003_008/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02003_008/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02003_008/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02003_008/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/piano/Track01950_011/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01950_011/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01950_011/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01950_011/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01950_011/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01950_011/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01950_011/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01950_011/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01950_011/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01950_011/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01950_011/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01950_011/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01950_011/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01950_011/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/piano/Track01878_019/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01878_019/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01878_019/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01878_019/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01878_019/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01878_019/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01878_019/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01878_019/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01878_019/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01878_019/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01878_019/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01878_019/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01878_019/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01878_019/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/piano/Track01948_008/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01948_008/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01948_008/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01948_008/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01948_008/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01948_008/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01948_008/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01948_008/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01948_008/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01948_008/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01948_008/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01948_008/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01948_008/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01948_008/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/piano/Track01960_015/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01960_015/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01960_015/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01960_015/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01960_015/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01960_015/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01960_015/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01960_015/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01960_015/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01960_015/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01960_015/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01960_015/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01960_015/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01960_015/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/piano/Track02081_025/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02081_025/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02081_025/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02081_025/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02081_025/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02081_025/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02081_025/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02081_025/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02081_025/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02081_025/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02081_025/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02081_025/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track02081_025/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track02081_025/MGE/mix.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="2">
+                <img src="static/audios/bdgp/partial_gen/piano/Track01876_002/given.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01876_002/given.wav"></audio></td>
+              <td>Gen</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01876_002/MSDM/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01876_002/MSDM/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01876_002/MSG_LD/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01876_002/MSG_LD/pgen.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01876_002/MGE/pgen.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01876_002/MGE/pgen.wav"></audio>
+              </td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01876_002/MSDM/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01876_002/MSDM/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01876_002/MSG_LD/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01876_002/MSG_LD/mix.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/partial_gen/piano/Track01876_002/MGE/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px; margin:0; padding:0;" src="static/audios/bdgp/partial_gen/piano/Track01876_002/MGE/mix.wav"></audio></td>
+            </tr>
+            
+          </tbody>
+        </table>
+      </div>
+      <p class="has-text-right is-size-7">
+        Gen: generated piano<br>
+        Mix: given mixture + generated piano
+      </p>
+      <p class="has-text-right is-size-7" style="margin-top:1.5em;">
+        [1] Giorgio Mariani, et al., "Multi-Source Diffusion Models for Simultaneous Music Generation and Separation." <br>
+        ICLR 2024. <a href="https://arxiv.org/abs/2302.02257" target="_blank">[Paper]</a><br>
+        [2] Tornike Karchkhadze, et al., "Simultaneous music separation and generation using multi-track latent diffusion models." <br>
+        ICASSP 2025. <a href="https://arxiv.org/abs/2409.12346" target="_blank">[Paper]</a>
+      </p>
+
+
+    </div>
+  </section>
+
+  <script>
+    document.querySelectorAll('.js-player').forEach(el => {
+      new Plyr(el, { controls: ['play', 'progress'] });
+    });
+  </script>
+</body>
+</html>

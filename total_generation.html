@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <!-- Meta tags for social media banners, these should be filled in appropriatly as they are your "business card" -->
+        <!-- Replace the content tag with appropriate information -->
+        <meta name="description" content="DESCRIPTION META TAG">
+        <meta property="og:title" content="SOCIAL MEDIA TITLE TAG"/>
+        <meta property="og:description" content="SOCIAL MEDIA DESCRIPTION TAG TAG"/>
+        <meta property="og:url" content="URL OF THE WEBSITE"/>
+        <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X630-->
+        <meta property="og:image" content="static/image/your_banner_image.png" />
+        <meta property="og:image:width" content="1200"/>
+        <meta property="og:image:height" content="630"/>
+      
+      
+        <meta name="twitter:title" content="TWITTER BANNER TITLE META TAG">
+        <meta name="twitter:description" content="TWITTER BANNER DESCRIPTION META TAG">
+        <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X600-->
+        <meta name="twitter:image" content="static/images/your_twitter_banner_image.png">
+        <meta name="twitter:card" content="summary_large_image">
+        <!-- Keywords for your paper to be indexed by-->
+        <meta name="keywords" content="KEYWORDS SHOULD BE PLACED HERE">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+      
+      
+        <title>MGE-LDM Slakh Total Generation</title>
+        <link rel="icon" type="image/x-icon" href="static/images/music_favicon.png">
+        <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+      
+        <link rel="stylesheet" href="static/css/bulma.min.css">
+        <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+        <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+        <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+        <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+        <link rel="stylesheet" href="static/css/index.css">
+      
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+        <script defer src="static/js/fontawesome.all.min.js"></script>
+        <script src="static/js/bulma-carousel.min.js"></script>
+        <script src="static/js/bulma-slider.min.js"></script>
+        <script src="static/js/index.js"></script>
+      
+        <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+        <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+        <style>
+          .plyr audio,
+          .plyr__controls {
+            min-width: 80px;  /* 플레이어 폭, 더 줄이고 싶으면 수정 */
+            max-width: 100px;
+          }
+          .mel-img {
+            width: 110px;
+            max-width: 100px;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto 8px;
+          }
+          .js-player .plyr{
+            width: 110px !important; /* Plyr.js 오디오 바 width 강제 */
+            min-width: 100px !important;
+            display: block;
+            margin: 0 auto;
+          }
+          td {
+            vertical-align: middle !important;
+            text-align: center !important;
+            padding: 8px 4px;
+          }
+          /* 보라색 버튼 (#996699) */
+          .btn-purple {
+            background: #996699 !important;
+            color: #fff !important;
+            border: none !important;
+          }
+          .btn-purple:hover, .btn-purple:focus {
+            background: #7d5682 !important; /* 조금 더 진한 보라색 (hover) */
+            color: #fff !important;
+          }
+
+          /* 노란색 버튼 (#FFCC33) */
+          .btn-yellow {
+            background: #FFCC33 !important;
+            color: #333 !important;
+            border: none !important;
+          }
+          .btn-yellow:hover, .btn-yellow:focus {
+            background: #e6b800 !important; /* 진한 노랑 (hover) */
+            color: #222 !important;
+          }
+
+          /* 빨간색 버튼 (#FF6666) */
+          .btn-red {
+            background: #FF6666 !important;
+            color: #fff !important;
+            border: none !important;
+          }
+          .btn-red:hover, .btn-red:focus {
+            background: #cc3333 !important; /* 진한 빨강 (hover) */
+            color: #fff !important;
+          }
+          td, th {
+            text-align: center !important;
+            vertical-align: middle !important;
+          }
+          
+          .mel-img {
+            width: 80px;
+            max-width: 80px;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto 8px !important;
+          }
+          
+          .js-player, .plyr, .plyr__controls {
+            width: 120px !important; /* Plyr.js 오디오 바 width 강제 */
+            min-width: 100px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            margin-bottom: 0 !important;
+          }
+          
+          .plyr--audio {
+            max-width: 110px !important;
+            min-width: 90px !important;
+            width: 100px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            display: block !important;
+          }
+          
+          .plyr__controls {
+            justify-content: center !important;
+          }
+        </style>
+      </head>
+
+      
+<body>
+  <section class="hero is-light">
+    <div class="hero-body">
+      <div class="container is-max-desktop has-text-centered">
+        <h1 class="title is-2" style="margin-bottom:0.8em;">Total Generation Demo (Slakh)</h1>
+        <h2 class="subtitle is-5">MGE-LDM: Simultaneous Music Generation and Extraction via Joint Latent Modeling</h2>
+        <div class="buttons is-centered" style="margin-top:1em;">
+          <a href="index.html" class="button is-primary is-small">Home</a>
+          <!-- <a href="total_generation.html" class="button is-primary is-small">Total Generation</a> -->
+          <a href="partial_generation.html" class="button btn-yellow is-small">Partial Generation (Slakh)</a>
+          <a href="extraction.html" class="button btn-red is-small">Source Extraction (Slakh)</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Total Generation Table Only -->
+  <section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Total Generation Samples</h2>
+      <div style="display: flex; justify-content: center;">
+        <table class="table is-striped is-hoverable has-text-centered">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>MSDM<sup>[1]</sup></th>
+              <th>MSG-LD<sup>[2]</sup></th>
+              <th>MGE-LDM (ours)</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+            <tr>
+              <td class="desc">#1</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track02046_008.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track02046_008.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track02052_001.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track02052_001.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/095.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/095.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#2</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track02024_009.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track02024_009.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track02007_008.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track02007_008.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/125.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/125.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#3</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track02052_001.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track02052_001.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track01881_010.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track01881_010.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/073.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/073.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#4</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track01997_014.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track01997_014.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track02067_008.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track02067_008.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/005.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/005.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#5</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track02083_004.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track02083_004.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track02063_027.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track02063_027.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/146.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/146.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#6</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track02081_012.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track02081_012.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track02051_010.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track02051_010.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/163.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/163.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#7</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track02088_004.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track02088_004.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track01975_014.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track01975_014.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/209.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/209.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#8</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track02001_015.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track02001_015.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track01989_021.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track01989_021.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/256.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/256.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#9</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track01954_008.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track01954_008.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track02007_002.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track02007_002.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/023.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/023.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#10</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track01927_004.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track01927_004.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track01963_006.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track01963_006.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/295.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/295.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#11</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track01972_015.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track01972_015.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track02008_016.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track02008_016.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/214.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/214.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#12</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track01937_014.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track01937_014.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track01887_033.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track01887_033.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/025.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/025.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#13</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track01998_014.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track01998_014.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track02013_019.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track02013_019.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/266.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/266.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#14</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track01967_012.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track01967_012.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track02067_010.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track02067_010.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/040.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/040.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#15</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track01972_028.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track01972_028.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track02050_015.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track02050_015.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/293.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/293.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#16</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track01945_000.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track01945_000.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track02048_003.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track02048_003.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/287.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/287.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#17</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track01990_037.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track01990_037.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track01902_018.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track01902_018.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/111.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/111.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#18</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track01986_003.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track01986_003.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track02095_005.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track02095_005.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/100.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/100.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#19</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track02026_010.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track02026_010.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track01883_017.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track01883_017.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/252.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/252.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#20</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track02002_009.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track02002_009.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track02064_017.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track02064_017.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/013.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/013.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#21</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track01881_023.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track01881_023.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track02003_010.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track02003_010.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/155.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/155.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#22</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track01918_003.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track01918_003.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track01896_001.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track01896_001.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/160.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/160.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#23</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track01932_009.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track01932_009.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track01892_014.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track01892_014.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/056.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/056.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#24</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track01951_000.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track01951_000.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track01981_021.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track01981_021.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/219.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/219.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#25</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track02051_010.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track02051_010.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track01960_015.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track01960_015.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/117.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/117.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#26</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track01952_014.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track01952_014.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track01888_019.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track01888_019.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/027.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/027.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#27</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track02063_027.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track02063_027.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track01891_007.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track01891_007.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/242.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/242.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#28</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track01961_029.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track01961_029.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track02094_004.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track02094_004.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/011.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/011.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#29</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track01945_017.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track01945_017.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track01893_009.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track01893_009.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/120.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/120.wav"></audio>
+              </td>
+            </tr>
+            
+            <tr>
+              <td class="desc">#30</td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSDM/Track01968_022.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSDM/Track01968_022.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MSG_LD/Track02004_000.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MSG_LD/Track02004_000.wav"></audio>
+              </td>
+              <td>
+                <img src="static/audios/bdgp/total_gen/MGE/211.png" alt="Mel" class="mel-img">
+                <audio class="js-player" src="static/audios/bdgp/total_gen/MGE/211.wav"></audio>
+              </td>
+            </tr>
+            
+          </tbody>
+        </table>
+      </div>
+      <p class="has-text-right is-size-7" style="margin-top:1.5em;">
+        [1] Giorgio Mariani, et al., "Multi-Source Diffusion Models for Simultaneous Music Generation and Separation." <br>
+        ICLR 2024. <a href="https://arxiv.org/abs/2302.02257" target="_blank">[Paper]</a><br>
+        [2] Tornike Karchkhadze, et al., "Simultaneous music separation and generation using multi-track latent diffusion models." <br>
+        ICASSP 2025. <a href="https://arxiv.org/abs/2409.12346" target="_blank">[Paper]</a>
+      </p>
+    </div>
+  </section>
+
+  <script>
+    document.querySelectorAll('.js-player').forEach(el => {
+      new Plyr(el, { controls: ['play', 'progress'] });
+    });
+  </script>
+</body>
+</html>

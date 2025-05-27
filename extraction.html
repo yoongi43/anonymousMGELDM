@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <!-- Meta tags for social media banners, these should be filled in appropriatly as they are your "business card" -->
+        <!-- Replace the content tag with appropriate information -->
+        <meta name="description" content="DESCRIPTION META TAG">
+        <meta property="og:title" content="SOCIAL MEDIA TITLE TAG"/>
+        <meta property="og:description" content="SOCIAL MEDIA DESCRIPTION TAG TAG"/>
+        <meta property="og:url" content="URL OF THE WEBSITE"/>
+        <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X630-->
+        <meta property="og:image" content="static/image/your_banner_image.png" />
+        <meta property="og:image:width" content="1200"/>
+        <meta property="og:image:height" content="630"/>
+      
+      
+        <meta name="twitter:title" content="TWITTER BANNER TITLE META TAG">
+        <meta name="twitter:description" content="TWITTER BANNER DESCRIPTION META TAG">
+        <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X600-->
+        <meta name="twitter:image" content="static/images/your_twitter_banner_image.png">
+        <meta name="twitter:card" content="summary_large_image">
+        <!-- Keywords for your paper to be indexed by-->
+        <meta name="keywords" content="KEYWORDS SHOULD BE PLACED HERE">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+      
+      
+        <title>MGE-LDM Slakh Source Extraction</title>
+        <link rel="icon" type="image/x-icon" href="static/images/music_favicon.png">
+        <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+      
+        <link rel="stylesheet" href="static/css/bulma.min.css">
+        <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+        <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+        <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+        <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+        <link rel="stylesheet" href="static/css/index.css">
+      
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+        <script defer src="static/js/fontawesome.all.min.js"></script>
+        <script src="static/js/bulma-carousel.min.js"></script>
+        <script src="static/js/bulma-slider.min.js"></script>
+        <script src="static/js/index.js"></script>
+      
+        <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+        <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+        <style>
+          .plyr audio,
+          .plyr__controls {
+            min-width: 80px;  /* 플레이어 폭, 더 줄이고 싶으면 수정 */
+            max-width: 100px;
+          }
+          .mel-img {
+            width: 80px;
+            max-width: 80px;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto;
+          }
+          .js-player {
+            width: 110px !important; /* Plyr.js 오디오 바 width 강제 */
+            min-width: 100px !important;
+            display: block;
+            margin: 0 auto;
+          }
+          td {
+            vertical-align: middle !important;
+            text-align: center !important;
+            padding: 8px 4px;
+          }
+          /* 보라색 버튼 (#996699) */
+          .btn-purple {
+            background: #996699 !important;
+            color: #fff !important;
+            border: none !important;
+          }
+          .btn-purple:hover, .btn-purple:focus {
+            background: #7d5682 !important; /* 조금 더 진한 보라색 (hover) */
+            color: #fff !important;
+          }
+
+          /* 노란색 버튼 (#FFCC33) */
+          .btn-yellow {
+            background: #FFCC33 !important;
+            color: #333 !important;
+            border: none !important;
+          }
+          .btn-yellow:hover, .btn-yellow:focus {
+            background: #e6b800 !important; /* 진한 노랑 (hover) */
+            color: #222 !important;
+          }
+
+          /* 빨간색 버튼 (#FF6666) */
+          .btn-red {
+            background: #FF6666 !important;
+            color: #fff !important;
+            border: none !important;
+          }
+          .btn-red:hover, .btn-red:focus {
+            background: #cc3333 !important; /* 진한 빨강 (hover) */
+            color: #fff !important;
+          }
+          td, th {
+            text-align: center !important;
+            vertical-align: middle !important;
+          }
+          
+          .mel-img {
+            width: 80px;
+            max-width: 80px;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto 8px !important;
+          }
+          
+          .js-player, .plyr, .plyr__controls {
+            width: 120px !important; /* Plyr.js 오디오 바 width 강제 */
+            min-width: 100px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            margin-bottom: 0 !important;
+          }
+          
+          .plyr--audio {
+            max-width: 110px !important;
+            min-width: 90px !important;
+            width: 100px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            display: block !important;
+          }
+          
+          .plyr__controls {
+            justify-content: center !important;
+          }
+        </style>
+      </head>
+      
+<body>
+  <section class="hero is-light">
+    <div class="hero-body">
+      <div class="container is-max-desktop has-text-centered">
+        <h1 class="title is-2" style="margin-bottom:0.8em;">Source Extraction Demo (Slakh)</h1>
+        <h2 class="subtitle is-5">MGE-LDM: Simultaneous Music Generation and Extraction via Joint Latent Modeling</h2>
+        <div class="buttons is-centered" style="margin-top:1em;">
+          <a href="index.html" class="button is-primary is-small">Home</a>
+          <a href="total_generation.html" class="button btn-purple is-small">Total Generation (Slakh)</a>
+          <a href="partial_generation.html" class="button btn-yellow is-small">Partial Generation (Slakh)</a>
+          <!-- <a href="extraction.html" class="button is-info is-small">Source Extraction</a> -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Extraction Table Only -->
+  <section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Source Extraction Samples</h2>
+      <div style="display: flex; justify-content: center;">
+        <table class="table is-striped is-hoverable has-text-centered">
+          <thead>
+            <tr>
+              <th>Mixture</th>
+              <th colspan="2">GT</th>
+              <th>MSDM<sup>[1]</sup></th>
+              <th>MSG-LD<sup>[2]</sup></th>
+              <th>MGE-LDM (ours)</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+            <tr>
+              <td rowspan="4">
+                <img src="static/audios/bdgp/source_ext/Track01985_004/ref/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01985_004/ref/mix.wav"></audio></td>
+              <td>Bass</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01985_004/ref/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01985_004/ref/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01985_004/MSDM/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01985_004/MSDM/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01985_004/MSG_LD/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01985_004/MSG_LD/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01985_004/MGE/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01985_004/MGE/bass.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Drums</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01985_004/ref/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01985_004/ref/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01985_004/MSDM/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01985_004/MSDM/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01985_004/MSG_LD/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01985_004/MSG_LD/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01985_004/MGE/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01985_004/MGE/drums.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Guitar</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01985_004/ref/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01985_004/ref/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01985_004/MSDM/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01985_004/MSDM/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01985_004/MSG_LD/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01985_004/MSG_LD/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01985_004/MGE/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01985_004/MGE/guitar.wav"></audio></td>
+            </tr>
+            <tr style="border-bottom: 3px solid #bbb;">
+              <td>Piano</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01985_004/ref/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01985_004/ref/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01985_004/MSDM/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01985_004/MSDM/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01985_004/MSG_LD/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01985_004/MSG_LD/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01985_004/MGE/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01985_004/MGE/piano.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="4">
+                <img src="static/audios/bdgp/source_ext/Track02046_007/ref/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02046_007/ref/mix.wav"></audio></td>
+              <td>Bass</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02046_007/ref/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02046_007/ref/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02046_007/MSDM/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02046_007/MSDM/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02046_007/MSG_LD/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02046_007/MSG_LD/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02046_007/MGE/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02046_007/MGE/bass.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Drums</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02046_007/ref/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02046_007/ref/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02046_007/MSDM/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02046_007/MSDM/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02046_007/MSG_LD/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02046_007/MSG_LD/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02046_007/MGE/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02046_007/MGE/drums.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Guitar</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02046_007/ref/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02046_007/ref/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02046_007/MSDM/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02046_007/MSDM/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02046_007/MSG_LD/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02046_007/MSG_LD/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02046_007/MGE/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02046_007/MGE/guitar.wav"></audio></td>
+            </tr>
+            <tr style="border-bottom: 3px solid #bbb;">
+              <td>Piano</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02046_007/ref/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02046_007/ref/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02046_007/MSDM/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02046_007/MSDM/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02046_007/MSG_LD/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02046_007/MSG_LD/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02046_007/MGE/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02046_007/MGE/piano.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="4">
+                <img src="static/audios/bdgp/source_ext/Track01940_016/ref/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01940_016/ref/mix.wav"></audio></td>
+              <td>Bass</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01940_016/ref/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01940_016/ref/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01940_016/MSDM/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01940_016/MSDM/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01940_016/MSG_LD/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01940_016/MSG_LD/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01940_016/MGE/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01940_016/MGE/bass.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Drums</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01940_016/ref/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01940_016/ref/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01940_016/MSDM/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01940_016/MSDM/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01940_016/MSG_LD/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01940_016/MSG_LD/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01940_016/MGE/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01940_016/MGE/drums.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Guitar</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01940_016/ref/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01940_016/ref/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01940_016/MSDM/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01940_016/MSDM/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01940_016/MSG_LD/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01940_016/MSG_LD/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01940_016/MGE/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01940_016/MGE/guitar.wav"></audio></td>
+            </tr>
+            <tr style="border-bottom: 3px solid #bbb;">
+              <td>Piano</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01940_016/ref/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01940_016/ref/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01940_016/MSDM/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01940_016/MSDM/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01940_016/MSG_LD/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01940_016/MSG_LD/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01940_016/MGE/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01940_016/MGE/piano.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="4">
+                <img src="static/audios/bdgp/source_ext/Track02079_002/ref/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02079_002/ref/mix.wav"></audio></td>
+              <td>Bass</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02079_002/ref/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02079_002/ref/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02079_002/MSDM/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02079_002/MSDM/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02079_002/MSG_LD/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02079_002/MSG_LD/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02079_002/MGE/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02079_002/MGE/bass.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Drums</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02079_002/ref/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02079_002/ref/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02079_002/MSDM/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02079_002/MSDM/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02079_002/MSG_LD/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02079_002/MSG_LD/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02079_002/MGE/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02079_002/MGE/drums.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Guitar</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02079_002/ref/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02079_002/ref/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02079_002/MSDM/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02079_002/MSDM/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02079_002/MSG_LD/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02079_002/MSG_LD/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02079_002/MGE/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02079_002/MGE/guitar.wav"></audio></td>
+            </tr>
+            <tr style="border-bottom: 3px solid #bbb;">
+              <td>Piano</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02079_002/ref/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02079_002/ref/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02079_002/MSDM/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02079_002/MSDM/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02079_002/MSG_LD/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02079_002/MSG_LD/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02079_002/MGE/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02079_002/MGE/piano.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="4">
+                <img src="static/audios/bdgp/source_ext/Track01982_003/ref/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_003/ref/mix.wav"></audio></td>
+              <td>Bass</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_003/ref/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_003/ref/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_003/MSDM/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_003/MSDM/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_003/MSG_LD/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_003/MSG_LD/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_003/MGE/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_003/MGE/bass.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Drums</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_003/ref/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_003/ref/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_003/MSDM/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_003/MSDM/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_003/MSG_LD/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_003/MSG_LD/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_003/MGE/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_003/MGE/drums.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Guitar</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_003/ref/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_003/ref/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_003/MSDM/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_003/MSDM/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_003/MSG_LD/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_003/MSG_LD/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_003/MGE/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_003/MGE/guitar.wav"></audio></td>
+            </tr>
+            <tr style="border-bottom: 3px solid #bbb;">
+              <td>Piano</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_003/ref/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_003/ref/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_003/MSDM/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_003/MSDM/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_003/MSG_LD/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_003/MSG_LD/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_003/MGE/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_003/MGE/piano.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="4">
+                <img src="static/audios/bdgp/source_ext/Track01927_015/ref/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01927_015/ref/mix.wav"></audio></td>
+              <td>Bass</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01927_015/ref/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01927_015/ref/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01927_015/MSDM/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01927_015/MSDM/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01927_015/MSG_LD/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01927_015/MSG_LD/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01927_015/MGE/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01927_015/MGE/bass.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Drums</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01927_015/ref/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01927_015/ref/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01927_015/MSDM/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01927_015/MSDM/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01927_015/MSG_LD/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01927_015/MSG_LD/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01927_015/MGE/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01927_015/MGE/drums.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Guitar</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01927_015/ref/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01927_015/ref/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01927_015/MSDM/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01927_015/MSDM/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01927_015/MSG_LD/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01927_015/MSG_LD/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01927_015/MGE/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01927_015/MGE/guitar.wav"></audio></td>
+            </tr>
+            <tr style="border-bottom: 3px solid #bbb;">
+              <td>Piano</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01927_015/ref/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01927_015/ref/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01927_015/MSDM/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01927_015/MSDM/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01927_015/MSG_LD/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01927_015/MSG_LD/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01927_015/MGE/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01927_015/MGE/piano.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="4">
+                <img src="static/audios/bdgp/source_ext/Track01982_000/ref/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_000/ref/mix.wav"></audio></td>
+              <td>Bass</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_000/ref/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_000/ref/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_000/MSDM/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_000/MSDM/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_000/MSG_LD/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_000/MSG_LD/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_000/MGE/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_000/MGE/bass.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Drums</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_000/ref/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_000/ref/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_000/MSDM/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_000/MSDM/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_000/MSG_LD/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_000/MSG_LD/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_000/MGE/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_000/MGE/drums.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Guitar</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_000/ref/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_000/ref/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_000/MSDM/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_000/MSDM/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_000/MSG_LD/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_000/MSG_LD/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_000/MGE/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_000/MGE/guitar.wav"></audio></td>
+            </tr>
+            <tr style="border-bottom: 3px solid #bbb;">
+              <td>Piano</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_000/ref/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_000/ref/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_000/MSDM/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_000/MSDM/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_000/MSG_LD/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_000/MSG_LD/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01982_000/MGE/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01982_000/MGE/piano.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="4">
+                <img src="static/audios/bdgp/source_ext/Track02030_003/ref/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02030_003/ref/mix.wav"></audio></td>
+              <td>Bass</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02030_003/ref/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02030_003/ref/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02030_003/MSDM/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02030_003/MSDM/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02030_003/MSG_LD/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02030_003/MSG_LD/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02030_003/MGE/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02030_003/MGE/bass.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Drums</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02030_003/ref/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02030_003/ref/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02030_003/MSDM/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02030_003/MSDM/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02030_003/MSG_LD/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02030_003/MSG_LD/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02030_003/MGE/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02030_003/MGE/drums.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Guitar</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02030_003/ref/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02030_003/ref/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02030_003/MSDM/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02030_003/MSDM/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02030_003/MSG_LD/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02030_003/MSG_LD/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02030_003/MGE/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02030_003/MGE/guitar.wav"></audio></td>
+            </tr>
+            <tr style="border-bottom: 3px solid #bbb;">
+              <td>Piano</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02030_003/ref/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02030_003/ref/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02030_003/MSDM/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02030_003/MSDM/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02030_003/MSG_LD/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02030_003/MSG_LD/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02030_003/MGE/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02030_003/MGE/piano.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="4">
+                <img src="static/audios/bdgp/source_ext/Track01925_007/ref/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01925_007/ref/mix.wav"></audio></td>
+              <td>Bass</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01925_007/ref/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01925_007/ref/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01925_007/MSDM/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01925_007/MSDM/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01925_007/MSG_LD/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01925_007/MSG_LD/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01925_007/MGE/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01925_007/MGE/bass.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Drums</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01925_007/ref/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01925_007/ref/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01925_007/MSDM/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01925_007/MSDM/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01925_007/MSG_LD/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01925_007/MSG_LD/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01925_007/MGE/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01925_007/MGE/drums.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Guitar</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01925_007/ref/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01925_007/ref/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01925_007/MSDM/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01925_007/MSDM/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01925_007/MSG_LD/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01925_007/MSG_LD/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01925_007/MGE/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01925_007/MGE/guitar.wav"></audio></td>
+            </tr>
+            <tr style="border-bottom: 3px solid #bbb;">
+              <td>Piano</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01925_007/ref/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01925_007/ref/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01925_007/MSDM/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01925_007/MSDM/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01925_007/MSG_LD/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01925_007/MSG_LD/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track01925_007/MGE/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track01925_007/MGE/piano.wav"></audio></td>
+            </tr>
+            
+            <tr>
+              <td rowspan="4">
+                <img src="static/audios/bdgp/source_ext/Track02003_008/ref/mix.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02003_008/ref/mix.wav"></audio></td>
+              <td>Bass</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02003_008/ref/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02003_008/ref/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02003_008/MSDM/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02003_008/MSDM/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02003_008/MSG_LD/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02003_008/MSG_LD/bass.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02003_008/MGE/bass.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02003_008/MGE/bass.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Drums</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02003_008/ref/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02003_008/ref/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02003_008/MSDM/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02003_008/MSDM/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02003_008/MSG_LD/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02003_008/MSG_LD/drums.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02003_008/MGE/drums.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02003_008/MGE/drums.wav"></audio></td>
+            </tr>
+            <tr>
+              <td>Guitar</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02003_008/ref/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02003_008/ref/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02003_008/MSDM/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02003_008/MSDM/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02003_008/MSG_LD/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02003_008/MSG_LD/guitar.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02003_008/MGE/guitar.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02003_008/MGE/guitar.wav"></audio></td>
+            </tr>
+            <tr style="border-bottom: 3px solid #bbb;">
+              <td>Piano</td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02003_008/ref/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02003_008/ref/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02003_008/MSDM/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02003_008/MSDM/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02003_008/MSG_LD/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02003_008/MSG_LD/piano.wav"></audio></td>
+              <td>
+                <img src="static/audios/bdgp/source_ext/Track02003_008/MGE/piano.png" alt="Mel" class="mel-img">
+                <audio class="js-player" style="width:230px;" src="static/audios/bdgp/source_ext/Track02003_008/MGE/piano.wav"></audio></td>
+            </tr>
+            
+          </tbody>
+        </table>
+      </div>
+      <p class="has-text-right is-size-7" style="margin-top:1.5em;">
+        [1] Giorgio Mariani, et al., "Multi-Source Diffusion Models for Simultaneous Music Generation and Separation." <br>
+        ICLR 2024. <a href="https://arxiv.org/abs/2302.02257" target="_blank">[Paper]</a><br>
+        [2] Tornike Karchkhadze, et al., "Simultaneous music separation and generation using multi-track latent diffusion models." <br>
+        ICASSP 2025. <a href="https://arxiv.org/abs/2409.12346" target="_blank">[Paper]</a>
+      </p>
+    </div>
+  </section>
+
+  <script>
+    document.querySelectorAll('.js-player').forEach(el => {
+      new Plyr(el, { controls: ['play', 'progress'] });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <!-- Meta tags for social media banners, these should be filled in appropriatly as they are your "business card" -->
+  <!-- Replace the content tag with appropriate information -->
+  <meta name="description" content="DESCRIPTION META TAG">
+  <meta property="og:title" content="SOCIAL MEDIA TITLE TAG"/>
+  <meta property="og:description" content="SOCIAL MEDIA DESCRIPTION TAG TAG"/>
+  <meta property="og:url" content="URL OF THE WEBSITE"/>
+  <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X630-->
+  <meta property="og:image" content="static/image/your_banner_image.png" />
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+
+
+  <meta name="twitter:title" content="TWITTER BANNER TITLE META TAG">
+  <meta name="twitter:description" content="TWITTER BANNER DESCRIPTION META TAG">
+  <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X600-->
+  <meta name="twitter:image" content="static/images/your_twitter_banner_image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- Keywords for your paper to be indexed by-->
+  <meta name="keywords" content="KEYWORDS SHOULD BE PLACED HERE">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <title>Academic Project Page</title>
+  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+  rel="stylesheet">
+
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script src="static/js/bulma-carousel.min.js"></script>
+  <script src="static/js/bulma-slider.min.js"></script>
+  <script src="static/js/index.js"></script>
+
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+  <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+  <style>
+    .plyr audio,
+    .plyr__controls {
+      min-width: 80px;  /* 플레이어 폭, 더 줄이고 싶으면 수정 */
+      max-width: 100px;
+    }
+  </style>
+</head>
+
+<body>
+    <section class="hero">
+        <div class="hero-body">
+          <div class="container is-max-desktop">
+            <div class="columns is-centered">
+              <div class="column has-text-centered">
+                <h1 class="title is-1 publication-title">{{paper.title}}</h1>
+                <div class="is-size-5 publication-authors">
+                  <!-- Paper authors -->
+                  <span class="author-block">
+                    <a href="FIRST AUTHOR PERSONAL LINK" target="_blank">{{paper.first_author}}</a><sup>*</sup>,</span>
+                    <span class="author-block">
+                      <a href="SECOND AUTHOR PERSONAL LINK" target="_blank">{{paper.second_author}}</a><sup>*</sup>,</span>
+                      </div>
+    
+                      <div class="is-size-5 publication-authors">
+                        <span class="author-block">Institution Name<br>Conferance name and year</span>
+                        <span class="eql-cntrb"><small><br><sup>*</sup>Indicates Equal Contribution</small></span>
+                      </div>
+    
+                      <div class="column has-text-centered">
+                        <div class="publication-links">
+                             <!-- Arxiv PDF link -->
+                          <span class="link-block">
+                            <a href="https://arxiv.org/pdf/<ARXIV PAPER ID>.pdf" target="_blank"
+                            class="external-link button is-normal is-rounded is-dark">
+                            <span class="icon">
+                              <i class="fas fa-file-pdf"></i>
+                            </span>
+                            <span>Paper</span>
+                          </a>
+                        </span>
+    
+                        <!-- Supplementary PDF link -->
+                        <span class="link-block">
+                          <a href="static/pdfs/supplementary_material.pdf" target="_blank"
+                          class="external-link button is-normal is-rounded is-dark">
+                          <span class="icon">
+                            <i class="fas fa-file-pdf"></i>
+                          </span>
+                          <span>Supplementary</span>
+                        </a>
+                      </span>
+    
+                      <!-- Github link -->
+                      <span class="link-block">
+                        <a href="https://github.com/YOUR REPO HERE" target="_blank"
+                        class="external-link button is-normal is-rounded is-dark">
+                        <span class="icon">
+                          <i class="fab fa-github"></i>
+                        </span>
+                        <span>Code</span>
+                      </a>
+                    </span>
+    
+                    <!-- ArXiv abstract Link -->
+                    <span class="link-block">
+                      <a href="https://arxiv.org/abs/<ARXIV PAPER ID>" target="_blank"
+                      class="external-link button is-normal is-rounded is-dark">
+                      <span class="icon">
+                        <i class="ai ai-arxiv"></i>
+                      </span>
+                      <span>arXiv</span>
+                    </a>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+<!-- Paper abstract -->
+<section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Abstract</h2>
+          <div class="content has-text-justified">
+            <p>
+                We present MGE-LDM, a unified latent diffusion framework for simultaneous music generation, source imputation, and query-driven source separation.
+                Unlike prior approaches constrained to fixed instrument classes, MGE-LDM learns a joint distribution over full mixtures, submixtures, and individual stems within a single compact latent diffusion model.
+                At inference, MGE-LDM enables (1) complete mixture generation, (2) 
+                partial generation (i.e., source imputation), and (3) text-conditioned extraction of arbitrary sources.
+                By formulating both separation and imputation as conditional inpainting tasks in the latent space, our approach supports flexible, class-agnostic manipulation of arbitrary instrument sources.
+                Notably, MGE-LDM can be trained jointly across heterogeneous multi-track datasets (e.g., Slakh2100, MUSDB18, MoisesDB) without relying on predefined instrument categories.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- End paper abstract -->
+
+
+  <!-- Main Figure Section -->
+<section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Proposed Method.</h2>
+          <figure>
+            <img src="static/images/figs_overall.png" alt="Overall Architecture Figure" style="max-width:100%; border-radius:16px; box-shadow: 0 0 24px #ccc;">
+            <figcaption style="margin-top: 12px; font-size: 1.1em; color: #555;">
+                (a) Training pipeline:
+                We train a three-track latent diffusion model on mixtures, submixtures, and sources. 
+                Each track is perturbed independently and conditioned on its corresponding timestep and CLAP embedding. 
+                <!-- The model is optimized using the v-objective,
+                as detailed in Sections 3.2 and 3.4.  -->
+                (b) Inference pipeline: 
+                At test time, task-specific latents are either
+                generated or inpainted based on available context and text prompts. 
+                The resulting latents are decoded into waveforms. 
+                <!-- See Section 3.3 for details. -->
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- End Main Figure Section -->
+
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Audio Demos</h2>
+      <div class="buttons is-centered">
+        <a href="total_generation.html" class="button is-primary is-medium is-rounded">Total Generation</a>
+        <a href="partial_generation.html" class="button is-link is-medium is-rounded">Partial Generation</a>
+        <a href="extraction.html" class="button is-info is-medium is-rounded">Source Extraction</a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Audio Samples Section -->
+
+  <!-- BDGP-Total Generation Section -->
+  <section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Total Generation Samples</h2>
+      <div style="display: flex; justify-content: center;">
+        <table class="table is-striped is-hoverable has-text-centered">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>MSDM<sup>[1]</sup></th>
+              <th>MSG-LD<sup>[2]</sup></th>
+              <th>MGE-LDM (ours)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in bdgp_gen %}
+            <tr>
+              <td class="desc">{{ s.desc }}</td>
+              <td><audio class="js-player" src="{{ s.msdm_gen }}"></audio></td>
+              <td><audio class="js-player" src="{{ s.msgld_gen }}"></audio></td>
+              <td><audio class="js-player" src="{{ s.mge_gen }}"></audio></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    <p class="has-text-right is-size-7" style="margin-top:1.5em;">
+      [1] Giorgio Mariani, Irene Tallini, Emilian Postolache, Michele Mancusi, Luca Cosmo, Emanuele Rodolà.<br>
+      <i>“Multi-Source Diffusion Models for Simultaneous Music Generation and Separation.”</i><br>
+      Twelfth International Conference on Learning Representations (ICLR), 2024.<br>
+      <a href="https://arxiv.org/abs/2302.02257" target="_blank">[Paper]</a>
+      <br><br>
+      [2] Tornike Karchkhadze, Mohammad Rasool Izadi, Shlomo Dubnov.<br>
+      <i>“Simultaneous music separation and generation using multi-track latent diffusion models.”</i><br>
+      ICASSP 2025 - IEEE International Conference on Acoustics, Speech and Signal Processing, 2025.<br>
+      <a href="https://arxiv.org/abs/2409.12346" target="_blank">[Paper]</a>
+    </p>
+    </div>
+  </section>
+
+
+  <!-- BDGP-Partial Generation Section -->
+  <section class="section hero is-light">
+    <div class="container is-max-desktop">
+
+      <h2 class="title is-3 has-text-centered">Partial Generation Samples</h2>
+      <!-- <body> Bass imputation </body> -->
+      <h3 class="title is-4 has-text-centered">Bass Imputation</h3>
+      <div style="display: flex; justify-content: center;">
+        <table class = "table is-striped is-hoverable has-text-centered">
+          <thead>
+            <tr>
+              <th colspan="2">Given Mixture</th>
+              <th>MSDM</th>
+              <th>MSG-LD</th>
+              <th>MGE-LDM (ours)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in bdgp_pgen.bass %}
+            <tr>
+              <td rowspan="2"><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.given }}"></audio></td>
+              <td>Gen</td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msdm_pgen }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msgld_pgen }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.mge_pgen }}"></audio></td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msdm_mix }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msgld_mix }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.mge_mix }}"></audio></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p class="has-text-right is-size-7">
+        Gen: generated bass<br>
+        Mix: given mixture + generated bass
+      </p>
+
+      <h3 class="title is-4 has-text-centered">Drums Imputation</h3>
+      <div style="display: flex; justify-content: center;">
+        <table class = "table is-striped is-hoverable has-text-centered">
+          <thead>
+            <tr>
+              <th colspan="2">Given Mixture</th>
+              <th>MSDM</th>
+              <th>MSG-LD</th>
+              <th>MGE-LDM (ours)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in bdgp_pgen.drums %}
+            <tr>
+              <td rowspan="2"><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.given }}"></audio></td>
+              <td>Gen</td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msdm_pgen }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msgld_pgen }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.mge_pgen }}"></audio></td>
+            </tr>
+            <tr>
+            <!-- <tr style="border-bottom: 3px solid #222;"> -->
+              <td>Mix</td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msdm_mix }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msgld_mix }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.mge_mix }}"></audio></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p class="has-text-right is-size-7">
+        Gen: generated drums<br>
+        Mix: given mixture + generated drums
+      </p>
+
+      <h3 class="title is-4 has-text-centered">Guitar Imputation</h3>
+      <div style="display: flex; justify-content: center;">
+        <table class = "table is-striped is-hoverable has-text-centered">
+          <thead>
+            <tr>
+              <th colspan="2">Given Mixture</th>
+              <th>MSDM</th>
+              <th>MSG-LD</th>
+              <th>MGE-LDM (ours)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in bdgp_pgen.guitar %}
+            <tr>
+              <td rowspan="2"><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.given }}"></audio></td>
+              <td>Gen</td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msdm_pgen }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msgld_pgen }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.mge_pgen }}"></audio></td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msdm_mix }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msgld_mix }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.mge_mix }}"></audio></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p class="has-text-right is-size-7">
+        Gen: generated guitar<br>
+        Mix: given mixture + generated guitar
+      </p>
+
+      <h3 class="title is-4 has-text-centered">Piano Imputation</h3>
+      <div style="display: flex; justify-content: center;">
+        <table class = "table is-striped is-hoverable has-text-centered">
+          <thead>
+            <tr>
+              <th colspan="2">Given Mixture</th>
+              <th>MSDM</th>
+              <th>MSG-LD</th>
+              <th>MGE-LDM (ours)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in bdgp_pgen.piano %}
+            <tr>
+              <td rowspan="2"><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.given }}"></audio></td>
+              <td>Gen</td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msdm_pgen }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msgld_pgen }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.mge_pgen }}"></audio></td>
+            </tr>
+            <tr>
+              <td>Mix</td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msdm_mix }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msgld_mix }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.mge_mix }}"></audio></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p class="has-text-right is-size-7">
+        Gen: generated piano<br>
+        Mix: given mixture + generated piano
+      </p>
+
+
+    </div>
+  </section>
+  
+
+  <!-- BDGP-Source Extraction Section -->
+  <section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <h2 class="title is-3 has-text-centered">Source Extraction Samples</h2>
+      <div style="display: flex; justify-content: center;">
+        <table class="table is-striped is-hoverable has-text-centered">
+          <thead>
+            <tr>
+              <th>Mixture</th>
+              <th colspan="2">GT</th>
+              <th>MSDM</th>
+              <th>MSG-LD</th>
+              <th>MGE-LDM (ours)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in bdgp_ext %}
+            <!-- <tr> -->
+            <tr style="border-bottom: 3px solid #bbb;"></tr>  
+              <td rowspan="4"><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.ref_mix }}"></audio></td>
+              <td> Bass </td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.ref_bass }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msdm_bass }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msgld_bass }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.mge_bass }}"></audio></td>
+            </tr>
+            <tr>
+              <td> Drums </td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.ref_drums }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msdm_drums }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msgld_drums }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.mge_drums }}"></audio></td>
+            </tr>
+            <tr>
+              <td> Guitar </td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.ref_guitar }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msdm_guitar }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msgld_guitar }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.mge_guitar }}"></audio></td>
+            </tr>
+            <tr>
+            <!-- <tr style="border-bottom: 3px solid #bbb;"></tr> -->
+              <td> Piano </td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.ref_piano }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msdm_piano }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.msgld_piano }}"></audio></td>
+              <td><audio class="js-player" style="width:230px; margin:0; padding:0;" src="{{ s.mge_piano }}"></audio></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+
+
+  <script>
+    document.querySelectorAll('.js-player').forEach(el => {
+      new Plyr(el, {
+        controls: ['play', 'progress'], // 진행바+재생버튼만 (시간표시 없음!)
+        // controls: ['play'] // 오직 play 버튼만
+        // controls: ['play', 'progress', 'current-time', 'duration'] // 시간도 보고싶으면
+      });
+    });
+  </script>
+</body>

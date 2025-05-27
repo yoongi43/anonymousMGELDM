@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ paper.title }}</title>
+    <style>
+        body { font-family: sans-serif; max-width: 900px; margin: 30px auto; }
+        h1 { color: #125699; }
+        .sample-table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+        .sample-table th, .sample-table td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+        .desc { text-align: left; }
+    </style>
+</head>
+<body>
+    <h1>{{ paper.title }}</h1>
+    <p><strong>저자:</strong> {{ paper.authors }}</p>
+    <p>
+        <a href="{{ paper.paper_url }}" target="_blank">논문 바로가기</a> |
+        <a href="{{ paper.code_url }}" target="_blank">코드(Github)</a>
+    </p>
+    <h2>오디오 샘플</h2>
+    <table class="sample-table">
+        <thead>
+            <tr>
+                <th>설명</th>
+                <th>원본</th>
+                <th>분리/합성 결과</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in samples %}
+            <tr>
+                <td class="desc">{{ s.desc }}</td>
+                <td>
+                    <audio controls>
+                        <source src="{{ s.orig }}" type="audio/wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </td>
+                <td>
+                    <audio controls>
+                        <source src="{{ s.sep }}" type="audio/wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
